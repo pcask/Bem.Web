@@ -1,0 +1,35 @@
+﻿@using System
+@using WebApplication3.Models
+@model List<Etkinlik>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .tarihiGecmis {
+            color: red;
+        }
+
+        .tarihiGecmemis{
+            color:green;
+        }
+    </style>
+</head>
+<body>
+    @*<h1>Sinema</h1>*@
+    <h2>Güncel</h2>
+    <ul>
+      @foreach(var sinema in Model)
+      {
+          var cls = (sinema.BitisTarihi < DateTime.Now) ? "tarihiGecmis" : "tarihiGecmemis";
+
+          <li class="@cls">@sinema.Adi</li>
+      }
+    </ul>
+</body>
+</html>

@@ -7,9 +7,9 @@ using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
 {
-    public class SinemaController : Controller
+    public class TiyatroController : Controller
     {
-        // GET: Sinema
+        // GET: Tiyatro
         public ActionResult Index()
         {
             return View();
@@ -17,17 +17,17 @@ namespace WebApplication3.Controllers
 
         public ActionResult Guncel()
         {
-            var sinemaListesi = new List<Etkinlik>();
+            var tiyatroListesi = new List<Etkinlik>();
 
-            foreach (var sinema in EtkinlikRepository.ListeyiDoldur())
+            foreach (var tiyatro in EtkinlikRepository.ListeyiDoldur())
             {
-                if ( sinema.EtkinlikTuru == EtkinlikTuru.Sinema)
+                if (tiyatro.EtkinlikTuru == EtkinlikTuru.Tiyatro)
                 {
-                    sinemaListesi.Add(sinema);
+                    tiyatroListesi.Add(tiyatro);
                 }
             }
 
-            return View("~/views/_shared/guncel.cshtml", sinemaListesi);
+            return View("~/views/_shared/guncel.cshtml", tiyatroListesi);
         }
     }
 }
