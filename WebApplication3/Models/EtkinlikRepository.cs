@@ -60,6 +60,34 @@ namespace WebApplication3.Models
                 EtkinlikTuru = EtkinlikTuru.Tiyatro
             });
 
+            Etkinlikler.Add(new Etkinlik
+            {
+                Adi = "Müzik1",
+                BaslangicTarihi = DateTime.Now,
+                BitisTarihi = DateTime.Now.AddDays(10),
+                EtkinlikTuru = EtkinlikTuru.Muzik
+            });
+            Etkinlikler.Add(new Etkinlik
+            {
+                Adi = "Müzik2",
+                BaslangicTarihi = DateTime.Now,
+                BitisTarihi = DateTime.Now.AddDays(-10),
+                EtkinlikTuru = EtkinlikTuru.Muzik
+            });
+            Etkinlikler.Add(new Etkinlik
+            {
+                Adi = "Müzik3",
+                BaslangicTarihi = DateTime.Now,
+                BitisTarihi = DateTime.Now.AddDays(10),
+                EtkinlikTuru = EtkinlikTuru.Muzik
+            });
+            Etkinlikler.Add(new Etkinlik
+            {
+                Adi = "Müzik4",
+                BaslangicTarihi = DateTime.Now,
+                BitisTarihi = DateTime.Now.AddDays(10),
+                EtkinlikTuru = EtkinlikTuru.Muzik
+            });
             return Etkinlikler;
         }
     }
