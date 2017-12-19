@@ -9,7 +9,7 @@ namespace WebApplication3.Controllers
 {
     public class MuzikController : Controller
     {
-        // GET: Muzik
+        // GET: Tiyatro
         public ActionResult Index()
         {
             return View();
