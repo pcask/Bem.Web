@@ -21,7 +21,7 @@ namespace WebApplication3.Controllers
 
             foreach (var sinema in EtkinlikRepository.ListeyiDoldur())
             {
-                if ( sinema.EtkinlikTuru == EtkinlikTuru.Sinema)
+                if (sinema.EtkinlikTuru == EtkinlikTuru.Sinema)
                 {
                     sinemaListesi.Add(sinema);
                 }
@@ -53,7 +53,7 @@ namespace WebApplication3.Controllers
 
             foreach (var sinema in EtkinlikRepository.ListeyiDoldur())
             {
-                if (sinema.EtkinlikTuru == EtkinlikTuru.Sinema && sinema.BaslangicTarihi<= DateTime.Now && sinema.BitisTarihi>= DateTime.Now)
+                if (sinema.EtkinlikTuru == EtkinlikTuru.Sinema && sinema.BaslangicTarihi <= DateTime.Now && sinema.BitisTarihi >= DateTime.Now)
                 {
                     sinemaListesi.Add(sinema);
                 }
@@ -83,6 +83,34 @@ namespace WebApplication3.Controllers
             foreach (var sinema in EtkinlikRepository.ListeyiDoldur())
             {
                 if (sinema.EtkinlikTuru == EtkinlikTuru.Sinema && sinema.BaslangicTarihi <= DateTime.Now && sinema.BitisTarihi.Year == DateTime.Now.Year && sinema.BitisTarihi.Month == DateTime.Now.Month)
+                {
+                    sinemaListesi.Add(sinema);
+                }
+            }
+            return View("~/views/_shared/guncel.cshtml", sinemaListesi);
+        }
+
+        public ActionResult TarihAraligi(string baslangicTarihi, string bitisTarihi)
+        {
+            var sinemaListesi = new List<Etkinlik>();
+
+
+            DateTime baslangic = Convert.ToDateTime(baslangicTarihi);
+            DateTime bitis = Convert.ToDateTime(bitisTarihi);
+
+            //new DateTime(Convert.ToInt32(baslangicDizi[2]), Convert.ToInt32(baslangicDizi[1]), Convert.ToInt32(baslangicDizi[0]));
+
+            //foreach (var sinema in EtkinlikRepository.ListeyiDoldur())
+            //{
+            //    if (sinema.EtkinlikTuru == EtkinlikTuru.Sinema && sinema.BitisTarihi >= baslangic && sinema.BitisTarihi <= bitis)
+            //    {
+            //        sinemaListesi.Add(sinema);
+            //    }
+            //}
+
+            foreach (var sinema in EtkinlikRepository.ListeyiDoldur())
+            {
+                if (sinema.EtkinlikTuru == EtkinlikTuru.Sinema && sinema.BitisTarihi >= baslangic && sinema.BitisTarihi <= bitis || (sinema.EtkinlikTuru == EtkinlikTuru.Sinema && sinema.BaslangicTarihi >= baslangic && sinema.BaslangicTarihi <= bitis))
                 {
                     sinemaListesi.Add(sinema);
                 }
