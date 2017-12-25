@@ -58,9 +58,18 @@ namespace sinav_test_uygulamasi.Models
         //    return sinav;
         //}
 
+        private static SqlConnection CreateConnection()
+        {
+            // Ev
+            return new SqlConnection(@"Data Source=PCASK\MSSQLSERVER2016D;Initial Catalog=SinavYonetim;Integrated Security=True");
+
+            // Sinif
+            //return new SqlConnection(@"Data Source=DESKTOP-S3O5AOR;Initial Catalog=SinavYonetim;Integrated Security=True");
+        }
+
         internal static List<Soru> SinavaAitSorulariGetir(string sinavAdi)
         {
-            using (var conn = new SqlConnection("Data Source=DESKTOP-S3O5AOR;Initial Catalog=SinavYonetim;Integrated Security=True"))
+            using (var conn = CreateConnection())
             {
                 var command = new SqlCommand("SELECT * FROM Questions as q WHERE q.SinavId IN(SELECT e.Id  FROM[SinavYonetim].[dbo].[Exams] as e  WHERE e.Url = @url)", conn);
                 command.Parameters.AddWithValue("@url", sinavAdi);
@@ -85,8 +94,8 @@ namespace sinav_test_uygulamasi.Models
                 foreach (var soru in sorular)
                 {
                     var commandQ = new SqlCommand("SELECT * FROM Options WHERE QuestionId =  @qId", conn);
+                    commandQ.Parameters.AddWithValue("@qId", soru.Id);
 
-                    commandQ.Parameters.AddWithValue("qId", soru.Id);
                     using (var rdr = commandQ.ExecuteReader())
                     {
                         while (rdr.Read())
@@ -145,8 +154,7 @@ namespace sinav_test_uygulamasi.Models
         {
             var sinav = new Sinav();
 
-            string connstr = "Data Source=DESKTOP-S3O5AOR;Initial Catalog=SinavYonetim;Integrated Security=True";
-            using (var connection = new SqlConnection(connstr))
+            using (var connection = CreateConnection())
             {
                 var command = new SqlCommand("SELECT * FROM Exams WHERE Url = @url", connection);
                 command.Parameters.AddWithValue("@url", key);
@@ -163,10 +171,36 @@ namespace sinav_test_uygulamasi.Models
             }
         }
 
+        public static List<Secenek> KayitliCevaplariGetir(int sinavId, int kullaniciId)
+        {
+            using(var con = CreateConnection())
+            {
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Answers WHERE ExamId = @eId AND PersonId = @pId", con);
+                cmd.Parameters.AddWithValue("@eId", sinavId);
+                cmd.Parameters.AddWithValue("@pId", kullaniciId);
+
+                con.Open();
+
+               SqlDataReader sdr = cmd.ExecuteReader();
+
+                List<Secenek> secenekler = new List<Secenek>();
+
+                while (sdr.Read())
+                {
+                    secenekler.Add(new Secenek
+                    {
+                        Id = Convert.ToInt32(sdr["OptionId"]),
+                        Question = new Soru { Id = Convert.ToInt32(sdr["QuestionId"]) }
+                    });
+                }
+
+                return secenekler;
+            }
+        }
+
         public static bool SoruyaCevapVer(int sinavId, int soruId, int secenekId, int kullaniciId)
         {
-            string connstr = "Data Source=DESKTOP-S3O5AOR;Initial Catalog=SinavYonetim;Integrated Security=True";
-            using (var connection = new SqlConnection(connstr))
+            using (var connection = CreateConnection())
             {
                 var command = new SqlCommand("SELECT Id FROM Answers WHERE PersonId = @pId AND QuestionId= @qId AND ExamId = @eId", connection);
                 command.Parameters.AddWithValue("@pId", kullaniciId);

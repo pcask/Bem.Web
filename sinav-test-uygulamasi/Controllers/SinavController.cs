@@ -58,7 +58,13 @@ namespace sinav_test_uygulamasi.Controllers
             var result = SinavRepository.SoruyaCevapVer(sinavId, soruId, secenekId, 1);
 
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
+        public JsonResult KayitliCevaplariGetir(int sinavId)
+        {
+            List<Secenek> secenekler = SinavRepository.KayitliCevaplariGetir(sinavId, 1);
+
+            return Json(secenekler, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult SinavListesi()
@@ -84,7 +90,6 @@ namespace sinav_test_uygulamasi.Controllers
                     while (rdr.Read())
                     {
                         examList.Add(new Sinav { Baslik = rdr["title"].ToString(), Aciklama = rdr["description"].ToString(), StartDate = (DateTime)rdr["startDate"], Sure = Convert.ToInt32(rdr["Duration"]) });
-
                     }
                 }
             }

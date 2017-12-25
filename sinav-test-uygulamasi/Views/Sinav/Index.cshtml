@@ -3,18 +3,18 @@
     Layout = "~/views/shared/_layout.cshtml";
 
 }
-            <div id="sinav" data-sinav-id="@Model.Sinav.Id">
-                <div id="header">
-                    <div id="kisi_bilgi"></div>
-                    <div id="sinav_bilgi">
-                        <h1 id="baslik">@Model.Sinav.Baslik</h1>
-                        <p id="aciklama">@Model.Sinav.Aciklama</p>
-                    </div>
-                    <button id="baslat">BAŞLA</button><button id="bitir" disabled="disabled">BİTİR</button><span id="sayac"></span>
-                </div>
-                <ul id="sorular"></ul>
-            </div>
-       
+<div id="sinav" data-sinav-id="@Model.Sinav.Id">
+    <div id="header">
+        <div id="kisi_bilgi"></div>
+        <div id="sinav_bilgi">
+            <h1 id="baslik">@Model.Sinav.Baslik</h1>
+            <p id="aciklama">@Model.Sinav.Aciklama</p>
+        </div>
+        <button id="baslat">BAŞLA</button><button id="bitir" disabled="disabled">BİTİR</button><span id="sayac"></span>
+    </div>
+    <ul id="sorular"></ul>
+</div>
+
 @section jss {
     <script>
 
@@ -37,6 +37,7 @@
                     cevapUl.appendTo(soruLi);
                 }
             }
+
 
             function seceneklereEventBagla() {
                 $('label, .check').bind('click', function () {
@@ -107,6 +108,21 @@
                 }
             })
         }
+
+        function kayitliCevaplariGetir() {
+
+            var sinavId = $("#sinav").data("sinav-id");
+
+            $.ajax({
+                url: '/sinav/KayitliCevaplariGetir',
+                method: 'post',
+                data: { sinavId: sinavId },
+                success: function (data) {
+                    cevaplariGetir(data);
+                }
+            });
+        }
+
 
         function Sayac(saniye) {
             var toplamSaniye = saniye;
@@ -184,20 +200,38 @@
             sinaviBitir();
         });
 
-        function kayitliCevaplariGetir() {
-            var c = $.cookie("cevapla") || "[]";
-            //var cevapDizi = c.substring(1, c.length - 1).split("][");
-            var cevapDizi = JSON.parse(c);
+        //function kayitliCevaplariGetir() {
+        //    var c = $.cookie("cevapla") || "[]";
+        //    //var cevapDizi = c.substring(1, c.length - 1).split("][");
+        //    var cevapDizi = JSON.parse(c);
 
 
-            for (var i = 0; i < cevapDizi.length; i++) {
-                if (cevapDizi[i] === undefined || cevapDizi[i] === null) {
-                    continue;
+        //    for (var i = 0; i < cevapDizi.length; i++) {
+        //        if (cevapDizi[i] === undefined || cevapDizi[i] === null) {
+        //            continue;
+        //        }
+
+        //        $('input[name="soru_' + i + '"][value="' + cevapDizi[i] + '"]').prop('checked', true);
+        //        //var cevapBirimleri = cevapDizi[i].split(      "=");
+        //        //$('input[name="soru_' + cevapBirimleri[0] + '"][value="' + cevapBirimleri[1] + '"]').prop('checked', true);
+        //    }
+        //}
+
+        //function kayitliCevaplariGetir(cevaplar) {
+
+        //    if (cevaplar.length > 0) {
+        //        for (var i = 0; i < cevaplar.length; i++) {
+        //            $('input[name="soru_' + cevaplar[i].QuestionId + '"][value="' + cevaplar[i].OptionId + '"]').prop('checked', true);
+        //        }
+        //    }
+
+        //}
+
+        function cevaplariGetir(cevaplar) {
+            if (cevaplar.length > 0) {
+                for (var i = 0; i < cevaplar.length; i++) {
+                    $('input[name="soru_' + cevaplar[i].Question.Id + '"][value="' + cevaplar[i].Id + '"]').prop('checked', true);
                 }
-
-                $('input[name="soru_' + i + '"][value="' + cevapDizi[i] + '"]').prop('checked', true);
-                //var cevapBirimleri = cevapDizi[i].split(      "=");
-                //$('input[name="soru_' + cevapBirimleri[0] + '"][value="' + cevapBirimleri[1] + '"]').prop('checked', true);
             }
         }
 
@@ -220,14 +254,12 @@
             $('#bitir').attr("disabled","disabled");
         } else {
 
-
-            kayitliCevaplariGetir();
-
             if ($.cookie("sinavDevamEdiyorMu") === "true") {
                 sinavSuresi = parseInt($.cookie("kalanSure"));
                 $('#baslat').attr('disabled', 'disabled');
                 $('#bitir').removeAttr("disabled");
                 sayaciBaslat();
+                kayitliCevaplariGetir();
             } else {
                 $('#baslat').attr('disabled', 'disabled');
                 $('#bitir').attr("disabled", "disabled");
