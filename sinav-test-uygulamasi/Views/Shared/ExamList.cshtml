@@ -1,0 +1,18 @@
+﻿@model List<sinav_test_uygulamasi.Models.Sinav>
+@{
+    ViewBag.Title = "ExamList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ExamList</h2>
+
+<ul id="sinav">
+    @{
+        foreach (var item in Model)
+        {
+            string cls = (item.StartDate > DateTime.Now) ? "yesil" : "kirmizi";
+
+            <li class="@cls">@item.Baslik</li>
+        }
+    }
+</ul>

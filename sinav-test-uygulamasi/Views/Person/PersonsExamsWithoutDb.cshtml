@@ -1,0 +1,25 @@
+﻿@using System.Data.SqlClient
+
+@{
+    ViewBag.Title = "PersonsExams";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>PersonsExams</h2>
+
+<ul id="sinav">
+    @{
+
+        foreach (sinav_test_uygulamasi.Models.Sinav item in ViewBag.SinavListesi)
+        {
+
+
+
+            string cls = (item.StartDate > DateTime.Now) ? "yesil" : "kirmizi";
+
+                    <li class="@cls">@item.Baslik</li>
+
+            }
+
+        }
+</ul>

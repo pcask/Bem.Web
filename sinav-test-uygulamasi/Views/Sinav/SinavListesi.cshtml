@@ -1,0 +1,26 @@
+﻿@using System.Data.SqlClient
+
+@{
+    ViewBag.Title = "SinavListesi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>SinavListesi</h2>
+<ul id="sinav">
+    @{
+        string connstr = "Data Source=DESKTOP-S3O5AOR;Initial Catalog=SinavYonetim;Integrated Security=True";
+        using (var connection = new SqlConnection(connstr))
+        {
+            var command = new SqlCommand("SELECT * FROM Exams", connection);
+            connection.Open();
+
+            using (var rdr = command.ExecuteReader())
+            {
+                while (rdr.Read())
+                {
+                    <li>@rdr["title"]</li>
+                }
+            }
+        }
+    }
+</ul>

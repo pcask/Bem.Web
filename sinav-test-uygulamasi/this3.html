@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+<script>
+
+    function objF() {
+        this.A = 3;
+        this.B = 5;
+        this.Topla = function () {
+            console.log(this.A + this.B);
+        }
+        this.Topla2 = function () {
+            //console.log(A + B)
+        }
+
+        return 12;
+
+    }
+
+    var obj = {
+        A: 3 + 6,
+        B: (3 > 5) ? 2 : 4,
+        C: objF(),
+        D: new objF(),
+        Topla: function () {
+            console.log(this.A + this.B);
+        },
+        Topla2: function () {
+            //console.log(A + B);
+
+        }
+
+    }
+
+
+    obj.Topla();
+    obj.Topla2();
+</script>
+</body>
+</html>

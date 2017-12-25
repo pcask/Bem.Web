@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="Content/duzenleme.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="sinav">
+        <div id="header">
+            <h1 id="baslik"></h1>
+            <p id="aciklama"></p>
+            <button id="baslat">BAŞLA</button><button id="bitir" disabled="disabled">BİTİR</button><span id="sayac"></span>
+</div>
+        <ul id="sorular"></ul>
+    </div>
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+    <script src="Content/jquery.cookie.js"></script>
+    <script src="Content/sinav.js"></script>
+    <script>
+        function sinavSorulariniOlustur() {
+
+            function sorulariOlustur() {
+                for (var i = 0; i < sinav.Sorular.length; i++) {
+                    var soru = sinav.Sorular[i];
+                    var soruLi = $('<li id="' + i + '"></li>');
+                    soruLi.append(soru.Metin);
+
+                    soruLi.appendTo('#sorular');
+                    var cevapUl = $('<ul></ul>');
+
+                    for (var j = 0; j < soru.Secenekler.length; j++) {
+                        $('<li><input value="' + j + '" type="radio" name="soru_' + i + '">' + '<label>' + soru.Secenekler[j] + '</label><div class="check"><div class="inside"></div></div></li>').appendTo(cevapUl);
+                    }
+
+                    cevapUl.appendTo(soruLi);
+                }
+            }
+            
+            function seceneklereEventBagla() {
+                $('label, .check').bind('click', function () {
+                    var input = $(this).siblings('input')[0];
+                    input.checked = true;
+                    //console.log($(this).siblings('input')[0])
+
+                    var kacinciSoru = parseInt($(input).attr("name").split('_')[1]);
+                    var kacinciSecenek = parseInt($(input).val());
+
+                    var eskiCevapMetin = $.cookie("cevapla") || "[]";
+                    var cevapDizi = JSON.parse(eskiCevapMetin);
+
+                    cevapDizi[kacinciSoru] = kacinciSecenek;
+                    $.cookie("cevapla", JSON.stringify(cevapDizi), {expires: 7});
+
+
+                    //if ($.cookie("cevapla") != undefined) {
+                    //    cevapDizisi = JSON.parse($.cookie("cevapla"));
+                    //} else {
+                    //    cevapDizisi = [];
+                    //}
+
+
+                    //if ($.cookie("cevapla") != undefined) {
+                    //    eskiCevapMetin = $.cookie("cevapla");
+                    //} else {
+                    //    eskiCevapMetin = "[]"
+                    //}
+
+
+
+
+                    //sinav.Sorular[kacinciSoru].Cevapla(kacinciSecenek);
+                    ////kacinciSoru + '='+kacinciSecenek;
+                    //var eskiCevaplar = $.cookie("cevapla") ? $.cookie("cevapla") : '';
+                    //if (eskiCevaplar.indexOf('[' + kacinciSoru) <0) {
+                    //    $.cookie("cevapla", eskiCevaplar + '[' + kacinciSoru + '=' + kacinciSecenek + ']', {expires:7});
+                    //} else {
+                    //    var parcalar = $.cookie("cevapla").split('[' + kacinciSoru + '=');
+                    //    var sonuc = parcalar[0] + '[' + kacinciSoru + '=' + kacinciSecenek + ']' + parcalar[1].substring(parcalar[1].indexOf(']') + 1);
+                    //    $.cookie("cevapla", sonuc, { expires: 7 });
+                    //}
+                });
+            }
+
+            sorulariOlustur();
+            seceneklereEventBagla();
+        }
+
+        function Sayac(saniye) {
+            var toplamSaniye = saniye;
+            var interval;
+            _this = this;
+            _this.YazilacakYer = '';
+            _this.KalanSure = function () {
+                return toplamSaniye;
+            }
+            _this.BasladigindaCalis = function () { };
+            _this.BittigindeCalis = function () { };
+            _this.ZamanDegistigindeCalis = function () { };
+            _this.Basla = function () {
+                _this.BasladigindaCalis();
+                interval = setInterval(function () {
+                    toplamSaniye--;
+                    
+
+                    var saat = Math.floor(toplamSaniye / 3600);
+                    var dakika = Math.floor((toplamSaniye % 3600) / 60);
+                    var saniye = Math.floor((toplamSaniye % 3600) % 60)
+
+                     $(_this.YazilacakYer).text(normalize(saat) + ':' + normalize(dakika) + ':' + normalize(saniye));
+
+                     _this.ZamanDegistigindeCalis();
+
+                    if (toplamSaniye < 1) {
+                        _this.Bitir();
+                        _this.BittigindeCalis();
+                    }
+
+                }, 100);
+            }
+
+            _this.Bitir = function () {
+                clearInterval(interval);
+            }
+
+            function normalize(deger) {
+                return deger < 10 ? "0" + deger : deger;
+            }
+        }
+
+        //var sinavSuresi = ($.cookie("sinavDevamEdiyorMu") === "true") ? parseInt($.cookie("kalanSure")): sinav.Sure * 60;
+        var sayac;
+
+        function sayaciBaslat() {
+            $('#sayac').text(sinav.Sure + ':00');
+            sayac = new Sayac(sinavSuresi);
+            sayac.YazilacakYer = '#sayac';
+            sayac.BasladigindaCalis = function () {
+                sinavSorulariniOlustur();
+            }
+            sayac.BittigindeCalis = sinaviBitir;
+            sayac.ZamanDegistigindeCalis = function () {
+                $.cookie("kalanSure", sayac.KalanSure(), { expires: 10 });
+            }
+            sayac.Basla();
+        }
+
+        $('#baslik').text(sinav.Baslik);
+        $('#aciklama').text(sinav.Aciklama);
+
+        $('#baslat').bind('click', function () {
+            sinavSorulariniOlustur();
+            sayaciBaslat();
+            $(this).attr("disabled", "disabled");
+            $('#bitir').removeAttr("disabled");
+            sinavDevamEdiyorMu = true;
+            $.cookie("sinavDevamEdiyorMu", "true", { expires: 10 });
+        });
+
+        $('#bitir').bind('click', function () {
+            sinavDevamEdiyorMu = false;
+            sinaviBitir();
+        });
+
+        function kayitliCevaplariGetir() {
+            var c = $.cookie("cevapla") || "[]";
+            //var cevapDizi = c.substring(1, c.length - 1).split("][");
+            var cevapDizi = JSON.parse(c);
+
+
+            for (var i = 0; i < cevapDizi.length; i++) {
+                if (cevapDizi[i] === undefined || cevapDizi[i] === null) {
+                    continue;
+                }
+
+                $('input[name="soru_' + i + '"][value="' + cevapDizi[i] + '"]').prop('checked', true);
+                //var cevapBirimleri = cevapDizi[i].split(      "=");
+                //$('input[name="soru_' + cevapBirimleri[0] + '"][value="' + cevapBirimleri[1] + '"]').prop('checked', true);
+            }
+        }
+
+        function sinaviBitir() {
+            $.cookie("sinavDevamEdiyorMu", "false", { expires: 10 });
+
+            if (sayac) {
+                sayac.Bitir();
+            }
+
+            $('label, .check').unbind('click');
+            $('#bitir').attr("disabled", "disabled");
+
+            $.cookie("sinav", JSON.stringify(sinav));
+        }
+
+        if ($.cookie("sinavDevamEdiyorMu") === undefined) {
+            sinavSuresi = sinav.Sure * 60;
+            $('#baslat').removeAttr('disabled');
+            $('#bitir').attr("disabled","disabled");
+        } else {
+
+            
+            kayitliCevaplariGetir();
+
+            if ($.cookie("sinavDevamEdiyorMu") === "true") {
+                sinavSuresi = parseInt($.cookie("kalanSure"));
+                $('#baslat').attr('disabled', 'disabled');
+                $('#bitir').removeAttr("disabled");
+                sayaciBaslat();
+            } else {
+                $('#baslat').attr('disabled', 'disabled');
+                $('#bitir').attr("disabled", "disabled");
+
+                sinaviBitir();
+            }
+        }
+
+
+    </script>
+</body>
+</html>

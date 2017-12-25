@@ -1,0 +1,21 @@
+﻿@model List<sinav_test_uygulamasi.Models.Soru>
+@{
+    Layout = null;
+}
+
+<ul id="sorular">
+    @for (int i = 0; i < Model.Count; i++)
+            {
+                var soru = Model[i];
+
+        <li id="@i">
+            <h3>@soru.Metin</h3>
+            @for (int j = 0; j < soru.Secenekler.Count; j++)
+            {
+                <ul>
+                    <li><input value="@j" name="soru_@i" type="radio"><label>@soru.Secenekler[j]</label><div class="check"><div class="inside"></div></div></li>
+                </ul>
+            }
+        </li>
+    }
+</ul>

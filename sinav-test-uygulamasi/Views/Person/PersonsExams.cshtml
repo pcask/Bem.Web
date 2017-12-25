@@ -1,0 +1,30 @@
+﻿@using System.Data.SqlClient
+
+@{
+    ViewBag.Title = "PersonsExams";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>PersonsExams</h2>
+
+<ul id="sinav">
+    @{
+        string connstr = "Data Source=DESKTOP-S3O5AOR;Initial Catalog=SinavYonetim;Integrated Security=True";
+        using (var connection = new SqlConnection(connstr))
+        {
+            var command = new SqlCommand("SELECT * FROM Exams WHERE Id IN (SELECT DISTINCT ExamId FROM Answers WHERE PersonId = @PersonId)", connection);
+            connection.Open();
+
+            using (var rdr = command.ExecuteReader())
+            {
+                while (rdr.Read())
+                {
+                    var tarih = (DateTime)rdr["StartDate"];
+                    string cls = (tarih > DateTime.Now) ? "yesil" : "kirmizi";
+
+                    <li class="@cls">@rdr["title"]</li>
+                }
+            }
+        }
+    }
+</ul>
